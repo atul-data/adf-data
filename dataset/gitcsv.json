@@ -1,0 +1,22 @@
+{
+	"name": "gitcsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkgit",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "atul-data/adf-data/refs/heads/main/factory/Sales.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
