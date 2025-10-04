@@ -1,0 +1,9 @@
+{
+	"name": "atul-adf-learning",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1da41408-1a4b-4285-868d-d5a93d65f7a4",
+		"tenantId": "5c84663f-52eb-45ab-8da3-2ee28553667e"
+	}
+}
