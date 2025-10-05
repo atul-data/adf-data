@@ -511,6 +511,44 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "Data transformation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "ForEach_csv",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "transformcsv",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceCSV": {},
+									"sinkFatfile": {},
+									"sinkotherfattype": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -520,6 +558,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/getmetadata')]",
+				"[concat(variables('factoryId'), '/dataflows/transformcsv')]",
 				"[concat(variables('factoryId'), '/datasets/parameterisecsv')]",
 				"[concat(variables('factoryId'), '/datasets/reportingsink')]"
 			]
@@ -710,6 +749,189 @@
 							"value": "@dataset().p_fileName",
 							"type": "Expression"
 						},
+						"fileSystem": "reporting"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linkedsrvdatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/transformcsv')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "transfor_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceCSV"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sinkfatfilecsv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkFatfile"
+						},
+						{
+							"dataset": {
+								"referenceName": "sinkdataflowcsv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkotherfattype"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectcolumn"
+						},
+						{
+							"name": "filterRows"
+						},
+						{
+							"name": "splitfiles"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Item_Identifier as string,",
+						"          Item_Weight as double,",
+						"          Item_Fat_Content as string,",
+						"          Item_Visibility as double,",
+						"          Item_Type as string,",
+						"          Item_MRP as double,",
+						"          Outlet_Identifier as string,",
+						"          Outlet_Establishment_Year as short,",
+						"          Outlet_Size as string,",
+						"          Outlet_Location_Type as string,",
+						"          Outlet_Type as string,",
+						"          Item_Outlet_Sales as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceCSV",
+						"sourceCSV select(mapColumn(",
+						"          Item_Identifier,",
+						"          Item_Weight,",
+						"          Item_Fat_Content,",
+						"          Item_Visibility,",
+						"          Item_Type,",
+						"          Item_MRP,",
+						"          Outlet_Type,",
+						"          Item_Outlet_Sales",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectcolumn",
+						"selectcolumn filter(Outlet_Type != 'Grocery Store') ~> filterRows",
+						"filterRows split(Item_Fat_Content == 'Low Fat',",
+						"     Item_Fat_Content != 'Low Fat',",
+						"     disjoint: false) ~> splitfiles@(FatTypelowfat, FatTypeothers)",
+						"splitfiles@FatTypelowfat sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sinkFatfile",
+						"splitfiles@FatTypeothers sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sinkotherfattype"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/transfor_csv')]",
+				"[concat(variables('factoryId'), '/datasets/sinkfatfilecsv')]",
+				"[concat(variables('factoryId'), '/datasets/sinkdataflowcsv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/transfor_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedsrvdatalake",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "reporting"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linkedsrvdatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkfatfilecsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedsrvdatalake",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "dataflowoutput",
+						"fileSystem": "reporting"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linkedsrvdatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkdataflowcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedsrvdatalake",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "dataflowoutput",
 						"fileSystem": "reporting"
 					},
 					"columnDelimiter": ",",
