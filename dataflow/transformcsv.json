@@ -1,0 +1,68 @@
+{
+	"name": "transformcsv",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "transfor_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCSV"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "selectcolumn"
+				},
+				{
+					"name": "filterRows"
+				},
+				{
+					"name": "splitfiles"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_Identifier as string,",
+				"          Item_Weight as double,",
+				"          Item_Fat_Content as string,",
+				"          Item_Visibility as double,",
+				"          Item_Type as string,",
+				"          Item_MRP as double,",
+				"          Outlet_Identifier as string,",
+				"          Outlet_Establishment_Year as short,",
+				"          Outlet_Size as string,",
+				"          Outlet_Location_Type as string,",
+				"          Outlet_Type as string,",
+				"          Item_Outlet_Sales as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCSV",
+				"sourceCSV select(mapColumn(",
+				"          Item_Identifier,",
+				"          Item_Weight,",
+				"          Item_Fat_Content,",
+				"          Item_Visibility,",
+				"          Item_Type,",
+				"          Item_MRP,",
+				"          Outlet_Type,",
+				"          Item_Outlet_Sales",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcolumn",
+				"selectcolumn filter(Outlet_Type != 'Grocery Store') ~> filterRows",
+				"filterRows split(Item_Fat_Content == 'Low Fat',",
+				"     Item_Fat_Content != 'Low Fat',",
+				"     disjoint: false) ~> splitfiles@(FatTypelowfat, FatTypeothers)",
+				"splitfiles@FatTypeothers derive(Item_MRP = ERROR_FUNCTION('')) ~> derivedColumn1"
+			]
+		}
+	}
+}
