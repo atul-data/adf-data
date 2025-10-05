@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com"
 		},
+		"managerTrigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/3691da08-fc92-49ab-a621-8175dd5d5c83/resourceGroups/rg-adf/providers/Microsoft.Storage/storageAccounts/adfstorageatul"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -54,6 +58,9 @@
 					},
 					"linkgit_properties_typeProperties_url": {
 						"value": "[parameters('linkgit_properties_typeProperties_url')]"
+					},
+					"managerTrigger_properties_typeProperties_scope": {
+						"value": "[parameters('managerTrigger_properties_typeProperties_scope')]"
 					}
 				}
 			},
