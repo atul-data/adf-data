@@ -19,7 +19,6 @@
 					"value": "@dataset().p_fileName",
 					"type": "Expression"
 				},
-				"folderPath": "csvfiles",
 				"fileSystem": "reporting"
 			},
 			"columnDelimiter": ",",
