@@ -1,0 +1,24 @@
+{
+	"name": "managerTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "masterpipeline",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/source/blobs/csvfiles/Sales.csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/3691da08-fc92-49ab-a621-8175dd5d5c83/resourceGroups/rg-adf/providers/Microsoft.Storage/storageAccounts/adfstorageatul",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
