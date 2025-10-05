@@ -1,0 +1,24 @@
+{
+	"name": "SelectTypeTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "getmetadataforsinglefile",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2025-10-05T15:13:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
