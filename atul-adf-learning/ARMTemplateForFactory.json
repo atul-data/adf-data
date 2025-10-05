@@ -432,7 +432,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"expression": {
-											"value": "@endswith(item().name,'1')",
+											"value": "@startswith(item().name,'Sales -')",
 											"type": "Expression"
 										},
 										"ifTrueActivities": [
@@ -710,7 +710,6 @@
 							"value": "@dataset().p_fileName",
 							"type": "Expression"
 						},
-						"folderPath": "csvfiles",
 						"fileSystem": "reporting"
 					},
 					"columnDelimiter": ",",
