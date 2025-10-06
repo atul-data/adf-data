@@ -60,7 +60,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "Select count(*) as total_count from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where last_updated > '@{activity('Last_cdc').output.firstRow.cdc_timestamp}'\n",
+								"value": "Select count(*) as total_count from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where last_updated > \n'@{if(empty(pipeline().parameters.backdate),activity('Last_cdc').output.firstRow.cdc_timestamp,pipeline().parameters.backdate)}'",
 								"type": "Expression"
 							}
 						}
@@ -102,7 +102,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "Select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where last_updated > '@{activity('Last_cdc').output.value[0].cdc_timestamp}'",
+										"value": "Select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where last_updated > \n'@{if(empty(pipeline().parameters.backdate),activity('Last_cdc').output.firstRow.cdc_timestamp,pipeline().parameters.backdate)}'",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -252,6 +252,9 @@
 			"table": {
 				"type": "string",
 				"defaultValue": "Orders"
+			},
+			"backdate": {
+				"type": "string"
 			}
 		},
 		"annotations": []
