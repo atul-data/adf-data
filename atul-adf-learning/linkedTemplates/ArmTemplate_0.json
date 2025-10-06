@@ -22,10 +22,6 @@
 		"managerTrigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/3691da08-fc92-49ab-a621-8175dd5d5c83/resourceGroups/rg-adf/providers/Microsoft.Storage/storageAccounts/adfstorageatul"
-		},
-		"ManTrigger_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/3691da08-fc92-49ab-a621-8175dd5d5c83/resourceGroups/rg-adf/providers/Microsoft.Storage/storageAccounts/adfstorageatul"
 		}
 	},
 	"variables": {
@@ -60,6 +56,26 @@
 					"url": "[parameters('linkgit_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelectTypeTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2025-10-05T15:13:00",
+						"timeZone": "India Standard Time"
+					}
 				}
 			},
 			"dependsOn": []
@@ -1159,36 +1175,6 @@
 				"[concat(variables('factoryId'), '/dataflows/transformcsv')]",
 				"[concat(variables('factoryId'), '/datasets/parameterisecsv')]",
 				"[concat(variables('factoryId'), '/datasets/reportingsink')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ManTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "masterpipeline",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/source/blobs/csvfiles/Sales.csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('ManTrigger_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/masterpipeline')]"
 			]
 		}
 	]

@@ -19,11 +19,11 @@
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com"
 		},
-		"managerTrigger_properties_typeProperties_scope": {
+		"ManTrigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/3691da08-fc92-49ab-a621-8175dd5d5c83/resourceGroups/rg-adf/providers/Microsoft.Storage/storageAccounts/adfstorageatul"
 		},
-		"ManTrigger_properties_typeProperties_scope": {
+		"managerTrigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/3691da08-fc92-49ab-a621-8175dd5d5c83/resourceGroups/rg-adf/providers/Microsoft.Storage/storageAccounts/adfstorageatul"
 		},
@@ -65,9 +65,6 @@
 					},
 					"managerTrigger_properties_typeProperties_scope": {
 						"value": "[parameters('managerTrigger_properties_typeProperties_scope')]"
-					},
-					"ManTrigger_properties_typeProperties_scope": {
-						"value": "[parameters('ManTrigger_properties_typeProperties_scope')]"
 					}
 				}
 			},
@@ -86,6 +83,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"ManTrigger_properties_typeProperties_scope": {
+						"value": "[parameters('ManTrigger_properties_typeProperties_scope')]"
 					}
 				}
 			},
